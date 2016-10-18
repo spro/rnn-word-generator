@@ -64,9 +64,13 @@ App = React.createClass
     render: ->
         <div className='container'>
             <div className='fields'>
-                <span>{@state.q}</span>
+                {if @state.samples then [0...Math.floor(@state.samples.length / 2)].map =>
+                    <div>{@state.q}</div>
+                }
                 <Editable value=@state.q onChange=@changeQ />
-                <span>{@state.q}</span>
+                {if @state.samples then [0...Math.floor(@state.samples.length / 2 - 1)].map =>
+                    <div>{@state.q}</div>
+                }
             </div>
 
             <div className='samples'>
