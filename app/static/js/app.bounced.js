@@ -99,17 +99,33 @@ App = React.createClass({
     })(this));
   },
   render: function() {
-    var _ref;
+    var _i, _j, _ref, _ref1, _ref2, _results, _results1;
     return React.createElement("div", {
       "className": 'container'
     }, React.createElement("div", {
       "className": 'fields'
-    }, React.createElement("span", null, this.state.q), React.createElement(Editable, {
+    }, (this.state.samples ? (function() {
+      _results = [];
+      for (var _i = 0, _ref = Math.floor(this.state.samples.length / 2); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+      return _results;
+    }).apply(this).map((function(_this) {
+      return function() {
+        return React.createElement("div", null, _this.state.q);
+      };
+    })(this)) : void 0), React.createElement(Editable, {
       "value": this.state.q,
       "onChange": this.changeQ
-    }), React.createElement("span", null, this.state.q)), React.createElement("div", {
+    }), (this.state.samples ? (function() {
+      _results1 = [];
+      for (var _j = 0, _ref1 = Math.floor(this.state.samples.length / 2 - 1); 0 <= _ref1 ? _j < _ref1 : _j > _ref1; 0 <= _ref1 ? _j++ : _j--){ _results1.push(_j); }
+      return _results1;
+    }).apply(this).map((function(_this) {
+      return function() {
+        return React.createElement("div", null, _this.state.q);
+      };
+    })(this)) : void 0)), React.createElement("div", {
       "className": 'samples'
-    }, (_ref = this.state.samples) != null ? _ref.map((function(_this) {
+    }, (_ref2 = this.state.samples) != null ? _ref2.map((function(_this) {
       return function(sample) {
         return React.createElement("div", {
           "className": 'sample',
