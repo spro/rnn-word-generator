@@ -80,14 +80,8 @@ App = React.createClass({
     return somata.remote('sample', 'sample', q).onValue((function(_this) {
       return function(samples) {
         console.log('[search] samples =', samples);
-        samples = samples.map(function(_arg) {
-          var class_name, sample;
-          class_name = _arg[0], sample = _arg[1];
-          sample = sample.replace(new RegExp('^' + _this.state.q), '');
-          return {
-            class_name: class_name,
-            sample: sample
-          };
+        samples.forEach(function(sample) {
+          return sample.sample = sample.sample.replace(new RegExp('^' + _this.state.q), '');
         });
         return _this.setState({
           samples: samples,

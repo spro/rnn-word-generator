@@ -71,7 +71,7 @@ function sample_all(prime_text)
     for ci = 1, data.n_classes do
         local sampled = sample(ci, prime_text)
         print(data.classes[ci], sampled)
-        table.insert(all_sampled, {data.classes[ci], sampled})
+        table.insert(all_sampled, {class_name=data.classes[ci], sample=sampled})
     end
     return all_sampled
 end

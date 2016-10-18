@@ -55,9 +55,8 @@ App = React.createClass
         somata.remote('sample', 'sample', q)
             .onValue (samples) =>
                 console.log '[search] samples =', samples
-                samples = samples.map ([class_name, sample]) =>
-                    sample = sample.replace(new RegExp('^' + @state.q), '')
-                    {class_name, sample}
+                samples.forEach (sample) =>
+                    sample.sample = sample.sample.replace(new RegExp('^' + @state.q), '')
                 @setState {samples, error: null, loading: false}
             .onError (error) =>
                 @setState {error, loading: false}
