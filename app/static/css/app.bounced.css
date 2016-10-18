@@ -11,15 +11,26 @@
 
 
 body {
-  font: 42px/1em Arimo;
+  font: 38px/1em Arimo;
   background: #f7f7f7;
 }
 
-.container {
-  height: 100%;
+.container,
+.inner {
   display: flex;
-  align-items: center;
+}
+
+.container {
+  width: 100%;
+  padding: 30px;
+  margin: 0 auto;
+  flex-direction: column;
   justify-content: center;
+}
+
+.inner {
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .fields {
@@ -27,27 +38,58 @@ body {
 }
 
 [contenteditable] {
-  min-width: 1em;
   outline: none;
   border: none;
+  min-width: 1px;
+  margin-bottom: 30px;
+  display: inline-block;
 }
 
-.samples {
-  min-width: 100px;
+.editable {
+  align-self: flex-start;
+  position: relative;
+  display: inline-block;
+}
+
+.placeholder {
+  color: #ccc;
+}
+
+.info {
+  color: #999;
+  margin-top: 30px;
+  font-size: 16px;
+  line-height: 20px;
+  align-self: flex-start;
+}
+
+.info a {
+  color: #ccc;
 }
 
 .samples .sample {
   min-height: 1em;
 }
 
-.key {
-  font-size: 0.5em;
-  padding-left: 20px;
+.keys {
+  flex-grow: 1;
+  padding-right: 20px;
+  text-align: right;
 }
 
-.key span {
+.keys .key {
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.keys span {
+  font-size: 0.5em;
+  display: inline-block;
   color: #fff;
   padding: 2px 5px;
+  line-height: 1em;
   border-radius: 2px;
 }
 
@@ -67,16 +109,30 @@ body {
 
 .spinner-container,
 .error-container {
-  position: absolute;
-  background: rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 100px;
+  margin-left: -100px;
+  margin-top: -100px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   color: #fff;
   padding: 5px;
 }
 
-.spinner-container i.fa,
-.error-container i.fa {
-  margin-right: 5px;
+.spinner-container i.fa + span,
+.error-container i.fa + span {
+  margin-top: 10px;
+  font-size: 20px;
+  line-height: 1em;
+  display: block;
 }
 
 .error-container {

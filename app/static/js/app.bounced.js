@@ -57,34 +57,21 @@ App = React.createClass({
   },
   componentDidMount: function() {
     this.q$ = KefirBus();
-    return this.q$.filter(function(q) {
-      return q.length > 0;
-    }).onValue(this.search);
-  },
-  changeQ: function(q) {
-    q = capitalize(q);
-    this.setState({
-      q: q
-    });
-    if (q.length === 0) {
-      this.setState({
-        samples: []
-      });
-    }
-    return this.q$.emit(q);
-  },
-  search: function(q) {
-    this.setState({
-      loading: true
-    });
-    return somata.remote('sample', 'sample', q).onValue((function(_this) {
-      return function(samples) {
+    this.search$ = this.q$.filter(function(q) {
+      return q.length >= 0;
+    }).debounce(250).flatMapLatest(this.search);
+    this.search$.onValue((function(_this) {
+      return function(_arg) {
+        var q, response, samples;
+        response = _arg.response, q = _arg.q;
+        samples = response;
         console.log('[search] samples =', samples);
         samples.forEach(function(sample) {
-          return sample.sample = sample.sample.replace(new RegExp('^' + _this.state.q), '');
+          return sample.sample = sample.sample.replace(new RegExp('^' + q), '');
         });
         return _this.setState({
           samples: samples,
+          searched_q: q,
           error: null,
           loading: false
         });
@@ -97,35 +84,48 @@ App = React.createClass({
         });
       };
     })(this));
+    return this.q$.emit('');
+  },
+  changeQ: function(q) {
+    q = capitalize(q.trim());
+    this.setState({
+      q: q
+    });
+    return this.q$.emit(q);
+  },
+  search: function(q) {
+    this.setState({
+      loading: true
+    });
+    return somata.remote('sample', 'sample', q).map(function(response) {
+      return {
+        response: response,
+        q: q
+      };
+    });
   },
   render: function() {
-    var _i, _j, _ref, _ref1, _ref2, _results, _results1;
+    var _i, _ref, _ref1, _results;
     return React.createElement("div", {
       "className": 'container'
+    }, React.createElement(Editable, {
+      "value": this.state.q,
+      "onChange": this.changeQ
+    }), React.createElement("div", {
+      "className": 'inner'
     }, React.createElement("div", {
       "className": 'fields'
     }, (this.state.samples ? (function() {
       _results = [];
-      for (var _i = 0, _ref = Math.floor(this.state.samples.length / 2); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+      for (var _i = 0, _ref = this.state.samples.length; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
       return _results;
     }).apply(this).map((function(_this) {
       return function() {
-        return React.createElement("div", null, _this.state.q);
-      };
-    })(this)) : void 0), React.createElement(Editable, {
-      "value": this.state.q,
-      "onChange": this.changeQ
-    }), (this.state.samples ? (function() {
-      _results1 = [];
-      for (var _j = 0, _ref1 = Math.floor(this.state.samples.length / 2 - 1); 0 <= _ref1 ? _j < _ref1 : _j > _ref1; 0 <= _ref1 ? _j++ : _j--){ _results1.push(_j); }
-      return _results1;
-    }).apply(this).map((function(_this) {
-      return function() {
-        return React.createElement("div", null, _this.state.q);
+        return React.createElement("div", null, _this.state.searched_q);
       };
     })(this)) : void 0)), React.createElement("div", {
       "className": 'samples'
-    }, (_ref2 = this.state.samples) != null ? _ref2.map((function(_this) {
+    }, (_ref1 = this.state.samples) != null ? _ref1.map((function(_this) {
       return function(sample) {
         return React.createElement("div", {
           "className": 'sample',
@@ -140,7 +140,12 @@ App = React.createClass({
       "class_names": this.state.samples.map(function(sample) {
         return sample.class_name;
       })
-    }) : void 0), (this.state.loading ? React.createElement(Spinner, null) : void 0), (this.state.error ? React.createElement(Error, null, this.state.error) : void 0));
+    }) : void 0), (this.state.loading ? React.createElement(Spinner, null, "Generating...") : void 0), (this.state.error ? React.createElement(Error, null, this.state.error) : void 0)), React.createElement("div", {
+      "className": 'info'
+    }, React.createElement("a", {
+      "href": "https://github.com/spro/rnn-word-generator",
+      "target": '_blank'
+    }, "How does it work?")));
   }
 });
 
@@ -148,9 +153,10 @@ Key = function(_arg) {
   var class_names;
   class_names = _arg.class_names;
   return React.createElement("div", {
-    "className": 'key'
+    "className": 'keys'
   }, class_names.map(function(class_name) {
     return React.createElement("div", {
+      "className": 'key',
       "key": class_name
     }, React.createElement("span", {
       "style": {
@@ -217,7 +223,11 @@ Editable = React.createClass({
     return el.focus();
   },
   render: function() {
-    return React.createElement(ContentEditable, {
+    var _ref;
+    return React.createElement("div", {
+      "className": 'editable',
+      "onClick": this.focus
+    }, React.createElement(ContentEditable, {
       "ref": 'input',
       "html": this.state.value,
       "onChange": this.onChange,
@@ -225,7 +235,9 @@ Editable = React.createClass({
       "onKeyDown": this.onKeyDown,
       "onBlur": this.save,
       "onFocus": this.onFocus
-    });
+    }), (!((_ref = this.state.value) != null ? _ref.length : void 0) ? React.createElement("span", {
+      "className": 'placeholder'
+    }, "Prime with ...") : void 0));
   }
 });
 
