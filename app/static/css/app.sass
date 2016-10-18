@@ -18,36 +18,73 @@ $sizes
     bar: 20px
 
 body
-    font: 42px/1em Arimo
+    font: 38px/1em Arimo
     background: $colors.lightest_gray
 
-.container
-    height: 100%
+.container, .inner
     display: flex
-    align-items: center
+
+.container
+    width: 100%
+    padding: 30px
+    margin: 0 auto
+    flex-direction: column
     justify-content: center
+
+.inner
+    justify-content: flex-start
+    align-items: center
 
 .fields
     text-align: right
 
 [contenteditable]
-    min-width: 1em
     outline: none
     border: none
+    min-width: 1px
+    margin-bottom: 30px
+    display: inline-block
+
+.editable
+    align-self: flex-start
+    position: relative
+    display: inline-block
+
+.placeholder
+    color: #ccc
+
+.info
+    color: #999
+    margin-top: 30px
+    font-size: 16px
+    line-height: 20px
+    align-self: flex-start
+
+    a
+        color: #ccc
 
 .samples
-    min-width: 100px
 
     .sample
         min-height: 1em
 
-.key
-    font-size: 0.5em
-    padding-left: 20px
+.keys
+    flex-grow: 1
+    padding-right: 20px
+    text-align: right
+
+    .key
+        height: 1em
+        display: flex
+        align-items: center
+        justify-content: flex-end
 
     span
+        font-size: 0.5em
+        display: inline-block
         color: #fff
         padding: 2px 5px
+        line-height: 1em
         border-radius: 2px
 
 .bar
@@ -63,14 +100,28 @@ body
         opacity: 1.0
 
 .spinner-container, .error-container
-    position: absolute
-    background: rgba(#000, 0.1)
+    position: fixed
+    top: 50%
+    left: 50%
+    width: 200px
+    height: 100px
+    margin-left: -100px
+    margin-top: -100px
+    padding: 20px
+    display: flex
+    align-items: center
+    justify-content: center
+    text-align: center
+    background: rgba(#000, 0.2)
     border-radius: 5px
     color: #fff
     padding: $padding.small
 
-    i.fa
-        margin-right: $padding.small
+    i.fa + span
+        margin-top: $padding.default
+        font-size: 20px
+        line-height: 1em
+        display: block
 
 .error-container
     background: #900

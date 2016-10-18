@@ -40,64 +40,69 @@ App = React.createClass
 
     componentDidMount: ->
         @q$ = KefirBus()
-        @q$.filter((q) -> q.length > 0).onValue(@search)
-        # @refs.input.focus()
+        @search$ = @q$.filter((q) -> q.length >= 0).debounce(250).flatMapLatest(@search)
+        @search$
+            .onValue ({response, q}) =>
+                samples = response
+                console.log '[search] samples =', samples
+                samples.forEach (sample) ->
+                    sample.sample = sample.sample.replace(new RegExp('^' + q), '')
+                @setState {samples, searched_q: q, error: null, loading: false}
+            .onError (error) =>
+                @setState {error, loading: false}
+        @q$.emit ''
 
     changeQ: (q) ->
-        q = capitalize q
+        q = capitalize q.trim()
         @setState {q}
-        if q.length == 0
-            @setState {samples: []}
         @q$.emit q
 
     search: (q) ->
         @setState {loading: true}
-        somata.remote('sample', 'sample', q)
-            .onValue (samples) =>
-                console.log '[search] samples =', samples
-                samples.forEach (sample) =>
-                    sample.sample = sample.sample.replace(new RegExp('^' + @state.q), '')
-                @setState {samples, error: null, loading: false}
-            .onError (error) =>
-                @setState {error, loading: false}
+        somata.remote('sample', 'sample', q).map (response) -> {response, q}
 
     render: ->
         <div className='container'>
-            <div className='fields'>
-                {if @state.samples then [0...Math.floor(@state.samples.length / 2)].map =>
-                    <div>{@state.q}</div>
+            <Editable value=@state.q onChange=@changeQ />
+
+            <div className='inner'>
+
+                <div className='fields'>
+                    {if @state.samples then [0...@state.samples.length].map =>
+                        <div>{@state.searched_q}</div>
+                    }
+                </div>
+
+                <div className='samples'>
+                    {@state.samples?.map (sample) =>
+                        # console.log '[sample]', sample
+                        <div className={'sample'} key=sample.class_name>
+                            <span style={color: color(sample.class_name)}>{sample.sample}</span>
+                        </div>
+                    }
+                </div>
+
+                {if @state.samples?
+                    <Key class_names={@state.samples.map (sample) -> sample.class_name} />
                 }
-                <Editable value=@state.q onChange=@changeQ />
-                {if @state.samples then [0...Math.floor(@state.samples.length / 2 - 1)].map =>
-                    <div>{@state.q}</div>
+
+                {if @state.loading
+                    <Spinner>Generating...</Spinner>
+                }
+                {if @state.error
+                    <Error>{@state.error}</Error>
                 }
             </div>
 
-            <div className='samples'>
-                {@state.samples?.map (sample) =>
-                    # console.log '[sample]', sample
-                    <div className={'sample'} key=sample.class_name>
-                        <span style={color: color(sample.class_name)}>{sample.sample}</span>
-                    </div>
-                }
+            <div className='info'>
+                <a href="https://github.com/spro/rnn-word-generator" target='_blank'>How does it work?</a>
             </div>
-
-            {if @state.samples?
-                <Key class_names={@state.samples.map (sample) -> sample.class_name} />
-            }
-
-            {if @state.loading
-                <Spinner />
-            }
-            {if @state.error
-                <Error>{@state.error}</Error>
-            }
         </div>
 
 Key = ({class_names}) ->
-    <div className='key'>
+    <div className='keys'>
         {class_names.map (class_name) ->
-            <div key=class_name>
+            <div className='key' key=class_name>
                 <span style={backgroundColor: color(class_name)}>{class_name}</span>
             </div>
         }
@@ -146,7 +151,12 @@ Editable = React.createClass
         el.focus()
 
     render: ->
-        <ContentEditable ref='input' html={@state.value} onChange=@onChange disabled=@props.disabled onKeyDown=@onKeyDown onBlur=@save onFocus=@onFocus />
+        <div className='editable' onClick=@focus>
+            <ContentEditable ref='input' html={@state.value} onChange=@onChange disabled=@props.disabled onKeyDown=@onKeyDown onBlur=@save onFocus=@onFocus />
+            {if !@state.value?.length
+                <span className='placeholder'>Prime with ...</span>
+            }
+        </div>
 
 ReactDOM.render <App />, document.getElementById 'app'
 
