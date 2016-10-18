@@ -1,0 +1,77 @@
+*
+    margin: 0
+    padding: 0
+    box-sizing: border-box
+
+$colors
+    blue: #5af
+    green: #5fa
+    medium_gray: #777
+    light_gray: #ddd
+    lightest_gray: #f7f7f7
+
+$padding
+    small: 5px
+    default: 10px
+
+$sizes
+    bar: 20px
+
+body
+    font: 42px/1em Arimo
+    background: $colors.lightest_gray
+
+.container
+    height: 100%
+    display: flex
+    align-items: center
+    justify-content: center
+
+.fields
+    text-align: right
+
+[contenteditable]
+    min-width: 1em
+    outline: none
+    border: none
+
+.samples
+    min-width: 100px
+
+    .sample
+        min-height: 1em
+
+.key
+    font-size: 0.5em
+    padding-left: 20px
+
+    span
+        color: #fff
+        padding: 2px 5px
+        border-radius: 2px
+
+.bar
+    height: 20px
+    background: $colors.blue
+    -webkit-transition: all 0.2s
+    padding: 0 $padding.small
+    display: flex
+    align-items: center
+
+    &.max
+        background: $colors.green
+        opacity: 1.0
+
+.spinner-container, .error-container
+    position: absolute
+    background: rgba(#000, 0.1)
+    border-radius: 5px
+    color: #fff
+    padding: $padding.small
+
+    i.fa
+        margin-right: $padding.small
+
+.error-container
+    background: #900
+
