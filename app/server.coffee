@@ -1,8 +1,9 @@
 polar = require 'somata-socketio'
 somata = require 'somata'
+config = require './config'
 client = new somata.Client
 
-app = polar port: 3566
+app = polar config
 
 app.get '/', (req, res) ->
     res.render 'index'
